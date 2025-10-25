@@ -5,17 +5,23 @@
 
 **INTRODUCTION**
 ---
-This project implements a **House Price Prediction System** built with **PyTorch** and **PySide6**, using the classic
-**Boston Housing Dataset** for training and evaluation.
-It combines machine learning model training with a user-friendly graphical interface for visualization and interaction.
+This project focuses on sentiment analysis of movie reviews using the **IMDB dataset**, combining **PyTorch**,
+**TensorFlow**, and **PySide6** to build a complete deep learning workflow with a visualization interface.
+
+The main goal is to help learners understand text processing, model training & evaluation, and GUI presentation.
 
 **FEATURES**
 ---
 
-+ Data loading and preprocessing (normalization, feature selection, etc.)
-+ Train and evaluate a neural network (MLP or RNN) for regression tasks
-+ Real-time visualization of training loss and prediction results
-+ Interactive GUI built with PySide6 for manual input and prediction
+- **Data Processing**: Utilize the IMDB dataset for text preprocessing, including tokenization, vectorization, and
+  padding.
+- **Model Training**: Implement RNN, LSTM, or Transformer models with PyTorch and TensorFlow for sentiment
+  classification.
+- **Real-time Visualization**: Build a simple desktop application with PySide6 to display training progress and
+  prediction results.
+- **Multi-framework Learning**: Experience both PyTorch and TensorFlow and understand their differences in text
+  classification tasks.
+- **Highly Extensible**: Easily swap models, optimizers, or preprocessing methods for experimental comparisons.
 
 The project aims to provide a hands-on example of deep learning workflow integration — from data preparation and model
 training to result visualization and deployment with GUI.
