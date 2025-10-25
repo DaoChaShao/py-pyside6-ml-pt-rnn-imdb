@@ -6,9 +6,32 @@
 # @File     :   SPA.py
 # @Desc     :   
 
-def main() -> None:
-    """ Main Function """
-    pass
+from spacy import load
 
-if __name__ == "__main__":
-    main()
+from utils.decorator import Timer
+
+
+@Timer("Tokenize and lemmatize English text using SpaCy")
+class SpaCyNLP:
+    """ SpaCy NLP Processor for English text
+    - download the small model
+        - pip: python -m spacy download en_core_web_sm
+        - uv:
+    - download the medium model
+        - pip: python -m spacy download en_core_web_md
+    - download the large model
+        - pip: python -m spacy download en_core_web_lg
+    """
+
+    def __init__(self, content: str):
+        """ Initialize SpaCy NLP Processor
+        :param content: The text to be tokenized.
+        """
+        self._nlp = load("en_core_web_lg")
+        self._doc = self._nlp(content)
+
+    def __call__(self) -> list:
+        """ Tokenize English text using spacy package into words.
+        :return: List of tokens.
+        """
+        return [token.lemma_ for token in self._doc]
