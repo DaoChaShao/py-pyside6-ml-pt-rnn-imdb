@@ -6,9 +6,4 @@
 # @File     :   predictor.py
 # @Desc     :   
 
-def main() -> None:
-    """ Main Function """
-    pass
 
-if __name__ == "__main__":
-    main()
