@@ -6,9 +6,15 @@
 # @File     :   main.py
 # @Desc     :   
 
+from utils.nlp import snlp_analysis
+
+
 def main() -> None:
     """ Main Function """
-    pass
+    text_zh = "这是一个用于测试自然语言处理功能的示例文本."
+    text_en = "This is a sample text for testing natural language processing features."
+    snlp_analysis(text_zh, language="zh")
+
 
 if __name__ == "__main__":
     main()
