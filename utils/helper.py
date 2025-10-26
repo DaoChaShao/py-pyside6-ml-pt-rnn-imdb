@@ -11,6 +11,7 @@ from random import seed as rnd_seed, getstate, setstate
 from pathlib import Path
 from pandas import DataFrame, read_csv
 from time import perf_counter
+from tqdm import tqdm
 
 from utils.decorator import timer
 
@@ -169,3 +170,40 @@ def load_json(json_path: str | Path) -> dict:
 def save_json(json_data: dict, json_path: str | Path) -> None:
     with open(str(json_path), "w", encoding="utf-8") as file:
         dump(json_data, file, indent=2)
+
+
+@timer
+def load_text_data_in_dir(filepath: str | Path):
+    """ Load text data from a directory
+    :param filepath: path to the directory
+    :return: concatenated text data from all files in the directory
+    """
+    data: dict[str, list] = {
+        "ids": [],
+        "contents": [],
+        "ratings": [],
+        "labels": [],
+    }
+    base: Path = Path(filepath)
+    if base.exists():
+        for subdir in base.iterdir():
+            if subdir.name == "pos":
+                label: int = 1
+            else:
+                label: int = 0
+            if subdir.is_dir():
+                for file in tqdm(subdir.iterdir(), total=12500, desc=f"Processing {subdir.name} in {base.name}"):
+                    if file.suffix == ".txt":
+                        with open(str(file), "r", encoding="utf-8") as f:
+                            content: str = f.read().strip()
+                        names: list[str] = file.stem.split("_")
+                        data["ids"].append(int(names[0]))
+                        data["contents"].append(str(content))
+                        data["ratings"].append(int(names[1]))
+                        data["labels"].append(int(label))
+
+        print(f"Loaded {len(data["ids"])} text files from directory: {filepath}")
+    else:
+        print(f"The directory {filepath} does not exist.")
+
+    return data
