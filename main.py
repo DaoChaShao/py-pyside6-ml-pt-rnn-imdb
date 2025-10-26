@@ -11,7 +11,7 @@ from tqdm import tqdm
 from utils.config import CONFIG
 from utils.helper import load_text_data_in_dir, save_json
 from utils.nlp import spacy_tokeniser, regular_english, count_frequency
-from utils.PT import LabelTorchDataset, TorchDataLoader
+from utils.PT import SeqClassificationTorchDataset, TorchDataLoader
 from utils.stats import split_data
 
 
@@ -108,9 +108,9 @@ def preprocess_data():
 
     # Padding the sequences to a fixed length
     lengths: list[int] = [len(seq) for seq in sequences]
-    max_len = max(lengths)
-    min_len = min(lengths)
-    avg_len = sum(lengths) / len(lengths)
+    max_len: int = max(lengths)
+    min_len: int = min(lengths)
+    avg_len: float = sum(lengths) / len(lengths)
     print(f"Max Length: {max_len}, Min Length: {min_len}, Avg Length: {avg_len:.2f}")
 
     # Setup features and labels
@@ -127,16 +127,16 @@ def preprocess_data():
     # print(f"{len(X_test)} X Test: {X_test}")
     # print(f"{len(y_test)} y Test: {y_test}")
 
-    return X_train, y_train, X_valid, y_valid, X_test, y_test
+    return X_train, y_train, X_valid, y_valid, X_test, y_test, max_len
 
 
 def prepare_dataset():
     """ Dataset Preparation Function """
-    X_train, y_train, X_valid, y_valid, _, _ = preprocess_data()
+    X_train, y_train, X_valid, y_valid, _, _, max_len = preprocess_data()
 
     # Create PyTorch Datasets
-    train_dataset = LabelTorchDataset(X_train, y_train)
-    valid_dataset = LabelTorchDataset(X_valid, y_valid)
+    train_dataset = SeqClassificationTorchDataset(X_train, y_train, max_len)
+    valid_dataset = SeqClassificationTorchDataset(X_valid, y_valid, max_len)
 
     # Create DataLoaders
     train_loader = TorchDataLoader(
