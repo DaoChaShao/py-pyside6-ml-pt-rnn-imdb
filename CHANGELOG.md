@@ -1,10 +1,16 @@
 <!-- insertion marker -->
 <a name="0.1.0"></a>
 
-## [0.1.0](https://github.com///compare/e5bd4d069fb126a5b9f8597ae4235f19f1c137e9...0.1.0) (2025-10-25)
+## [0.1.0](https://github.com///compare/e5bd4d069fb126a5b9f8597ae4235f19f1c137e9...0.1.0) (2025-10-26)
 
 ### Features
 
+- add spacy-pkuseg package for improved tokenization capabilities ([4cfb11c](https://github.com///commit/4cfb11cf50687840ef535ce11070733b8cabae46))
+- add spacy-pkuseg dependency for enhanced tokenization support ([7fd90cd](https://github.com///commit/7fd90cd5f3f412beccba3abbf8e48123681b8946))
+- implement SpaCy and Stanza tokenizers for English and Chinese text processing ([73314f7](https://github.com///commit/73314f7adb17e43edcdc2917f24d226080fda5fc))
+- integrate Spacy and Stanza tokenizers for English and Chinese text processing ([74ddc00](https://github.com///commit/74ddc008919780237dc5210e0a54c8180bf5136b))
+- add file paths for Spacy and Stanza models, and training/testing datasets ([b1d7407](https://github.com///commit/b1d7407ce82a19074613072caac4b6f565cb9767))
+- add CHANGELOG.md for version 0.1.0 with features and bug fixes ([0083342](https://github.com///commit/0083342a09441f8cc0b3afadff592fbd1c73dbbb))
 - add an uv file ([f3ba4dd](https://github.com///commit/f3ba4dd8196ef47e3ce4b9743f8a3c2465a8eff0))
 - implement RegressionTrainer class for model training and validation ([22e3c8a](https://github.com///commit/22e3c8a123612761379ba4614c107e589cbff1f5))
 - add THULAC text segmentation functions for Chinese NLP processing ([cc0159b](https://github.com///commit/cc0159bdf645a01ef5acf758099ddd09df55e3d5))
@@ -29,6 +35,13 @@
 
 - ensure main function is called and add newline at end of file ([097dcd8](https://github.com///commit/097dcd80ba540830cde95dd2cbaf318766fb893f))
 - add missing newline at end of file and ensure main function is called ([bea5df5](https://github.com///commit/bea5df5c434698f62a1d749a4c202968dc4f3394))
+
+### Docs
+
+- add usage instructions for NLP models in README.zh-CN.md ([e945193](https://github.com///commit/e94519336c119a16bd8057e634b9d39bb54d1937))
+- update README.md with instructions for downloading NLP models for SpaCy and Stanza ([e7b73d2](https://github.com///commit/e7b73d2af1f93ecc78fa95c61f11633f4ac99f1b))
+- delete a package ([94cfda2](https://github.com///commit/94cfda215447c877f081147d1123211bf66d088b))
+- update README.md for improved project description and clarity ([f89c612](https://github.com///commit/f89c6127362f100988333403fee281182a982163))
 
 ### Code Refactoring
 
