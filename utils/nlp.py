@@ -7,12 +7,13 @@
 # @Desc     :   
 
 from collections import Counter
-from os import path
 from pathlib import Path
 from re import compile, sub
 from pandas import DataFrame
-from stanza import Pipeline, download
+from spacy import load
+from stanza import Pipeline
 
+from utils.config import CONFIG
 from utils.decorator import timer
 
 
@@ -47,7 +48,7 @@ def regular_english(words: list[str]) -> list[str]:
 
 
 @timer
-def count_words_frequency(words: list[str], top_k: int = 10) -> tuple[list, DataFrame]:
+def count_frequency(words: list[str], top_k: int = 10) -> tuple[list, DataFrame]:
     """ Get frequency of Chinese words
     :param words: list of words to process
     :param top_k: number of top frequent words to return
@@ -65,54 +66,6 @@ def count_words_frequency(words: list[str], top_k: int = 10) -> tuple[list, Data
     print(f"Word Frequency Results:\n{sorted_df}")
 
     return words, sorted_df
-
-
-@timer
-def snlp_analysis(content: str, mode: str = "cut", language: str = "en", is_gpu: bool = False) -> list[str]:
-    """ Perform part-of-speech tagging using StanfordNLP
-    :param content: text content to process
-    :param mode: processing mode, e.g., 'cut' for word segmentation, 'pos' for get words and their pos, 'full' for full text processing,
-    :param language: language code for the text (default is 'zh' for Chinese, 'en' for English)
-    :param is_gpu: whether to use GPU for processing (default is False)
-    :return: list of tuples containing words and their corresponding POS tags
-    """
-    """
-    The weights_only in PyTorch 2.6 and later versions defaults to True.
-    However, StanfordNLP model files require weights_only=False.
-    If you plan to use StanfordNLP, you MUST set weights_only=False and downgrade to PyTorch 2.5 or earlier versions.
-    """
-    # Download the necessary models if not already downloaded
-    root_dir = path.dirname(path.abspath(__file__))
-    model_dir = path.join(root_dir, "models")
-    download(language, model_dir=model_dir)
-
-    # Set up the processors based on the mode
-    processors: str = "tokenize,lemma"
-    match mode:
-        case "cut":
-            processors: str = "tokenize,lemma"
-        case "pos":
-            processors: str = "tokenize,lemma,pos"
-    # Initialize the StanfordNLP pipeline
-    nlp = Pipeline(processors=processors, lang=language, use_gpu=is_gpu, download_method=None)
-    # Process the content
-    doc = nlp(content)
-
-    words_tuple: list[tuple[str] | tuple[str, str] | tuple[str, str, str]] = []
-    # Extract words and their POS tags
-    for sentence in doc.sentences:
-        for word in sentence.words:
-            match processors:
-                case "tokenize,lemma":
-                    words_tuple.append((word.text.lower(),))
-                case "tokenize,lemma,pos":
-                    words_tuple.append((word.text.lower(), word.upos))
-
-    words: list[str] = [word[0] for word in words_tuple]
-
-    print(f"The {len(words)} words has been {mode} using StanfordNLP Text Analysis.")
-
-    return words
 
 
 @timer
@@ -153,3 +106,71 @@ def extract_zh_chars(filepath: str | Path, pattern: str = r"[^\u4e00-\u9fa5]") -
     print(f"Total number of lines in the Chinese content: {len(lines)}")
 
     return chars, lines
+
+
+def spacy_tokeniser(content: str, lang: str) -> list[str]:
+    """ SpaCy NLP Processor for an English or a Chinese text
+    :param content: a text content to process
+    :param lang: language code for the text (e.g., 'en' for English, 'zh' for Chinese)
+    :return: list of tokens
+    """
+    words: list[str] = []
+    match lang:
+        case "en":
+            nlp = load(CONFIG.FILEPATHS.SPACY_EN_MODEL)
+            doc = nlp(content)
+            words = [token.lemma_ for token in doc]
+        case "zh":
+            nlp = load(CONFIG.FILEPATHS.SPACY_ZH_MODEL)
+            doc = nlp(content)
+            words = [token.text for token in doc]
+        case _:
+            raise ValueError(f"Unsupported language: {lang}")
+
+    print(f"The {len(words)} words has been segmented using SpaCy Tokeniser.")
+
+    return words
+
+
+@timer
+def stanza_tokeniser(content: str, mode: str = "cut", lang: str = "en", is_gpu: bool = False) -> list[str]:
+    """ Perform part-of-speech tagging using StanfordNLP, which is called Stanza now
+    :param content: text content to process
+    :param mode: processing mode, e.g., 'cut' for word segmentation, 'pos' for get words and their pos, 'full' for full text processing,
+    :param lang: language code for the text (default is 'zh' for Chinese, 'en' for English)
+    :param is_gpu: whether to use GPU for processing (default is False)
+    :return: list of tuples containing words and their corresponding POS tags
+    """
+    # Set up the processors based on the mode
+    processors: str = "tokenize,lemma"
+    match mode:
+        case "cut":
+            processors: str = "tokenize,lemma"
+        case "pos":
+            processors: str = "tokenize,lemma,pos"
+    # Initialize the StanfordNLP pipeline
+    nlp = Pipeline(
+        processors=processors,
+        lang=lang,
+        use_gpu=is_gpu,
+        model_dir=str(CONFIG.FILEPATHS.STANZA_MODEL),
+        download_method=None,
+    )
+    # Process the content
+    doc = nlp(content)
+
+    words_tuple: list[tuple[str] | tuple[str, str] | tuple[str, str, str]] = []
+    # Extract words and their POS tags
+    for sentence in doc.sentences:
+        for word in sentence.words:
+            match processors:
+                case "tokenize,lemma":
+                    words_tuple.append((word.text.lower(),))
+                case "tokenize,lemma,pos":
+                    words_tuple.append((word.text.lower(), word.upos))
+
+    words: list[str] = [word[0] for word in words_tuple]
+
+    print(f"The {len(words)} words has been {mode} using StanfordNLP/Stanza Tokeniser.")
+
+    return words
