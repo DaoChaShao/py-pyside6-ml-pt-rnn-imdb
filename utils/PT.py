@@ -421,7 +421,7 @@ class SeqPredictionTorchDataset(Dataset):
 class SeqClassificationTorchDataset(Dataset):
     """ A custom PyTorch Dataset class for handling sequential features and labels """
 
-    def __init__(self, feature_seqs: list, lbl_seqs: list, seq_max_len: int, pad_token: int) -> None:
+    def __init__(self, feature_seqs: list, lbl_seqs: list, seq_max_len: int, pad_token: int = 0) -> None:
         """ Initialise the TorchDataset class for sequential data
         :param feature_seqs: the input sequences
         :param lbl_seqs: the label sequences
