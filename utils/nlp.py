@@ -38,9 +38,9 @@ def regular_english(words: list[str]) -> list[str]:
     :param words: list of words to process
     :return: list of words containing only English characters
     """
-    pattern = compile(r"[A-Za-z]+")
+    pattern = compile(r"^[A-Za-z]+$")
 
-    english: list[str] = [word for word in words if pattern.match(word)]
+    english: list[str] = [word.lower() for word in words if pattern.match(word)]
 
     print(f"Retained {len(english)} English words from the original {len(words)} words.")
 
@@ -119,7 +119,7 @@ def spacy_tokeniser(content: str, lang: str) -> list[str]:
         case "en":
             nlp = load(CONFIG.FILEPATHS.SPACY_EN_MODEL)
             doc = nlp(content)
-            words = [token.lemma_ for token in doc]
+            words = [token.lemma_.lower() for token in doc]
         case "zh":
             nlp = load(CONFIG.FILEPATHS.SPACY_ZH_MODEL)
             doc = nlp(content)
