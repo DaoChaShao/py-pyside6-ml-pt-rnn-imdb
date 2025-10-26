@@ -17,6 +17,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class FilePaths:
     MODEL: Path = BASE_DIR / "models/model.pth"
     BOSTON_HOUSE_PRICES = BASE_DIR / "data/boston_house_prices.txt"
+    SPACY_EN_MODEL = BASE_DIR / "models/spacy/en_core_web_md"
+    SPACY_ZH_MODEL = BASE_DIR / "models/spacy/zh_core_web_md"
+    STANZA_MODEL = BASE_DIR / "models/stanza"
+    DATASET_TRAIN = BASE_DIR / "data/train/"
+    DATASET_TEST = BASE_DIR / "data/test/"
 
 
 @dataclass
