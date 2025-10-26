@@ -19,6 +19,31 @@
 - **多框架学习**：同时接触 PyTorch 和 TensorFlow，理解它们在文本分类任务中的应用差异。
 - **扩展性强**：可轻松替换模型、优化器或数据预处理方法，进行实验对比。
 
+**NLP 模型使用说明**
+---
+要使用本项目中提供的模型，请按照以下步骤进行：
+
+1. 使用 **SpaCy** 包下载 NLP 模型，在终端中运行以下命令：
+    ```bash
+    python -m spacy download en_core_web_sm
+    # 或使用 uv
+    uv pip download https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0.tar.gz
+    uv pip download https://github.com/explosion/spacy-models/releases/download/zh_core_web_md-3.8.0/zh_core_web_md-3.8.0.tar.gz
+    ```
+   该命令会下载 **md** 版本的英文 SpaCy 模型，适用于多种自然语言处理（NLP）任务。  
+   如果你计划更新模型，可以在 [SpaCy 模型页面](https://github.com/explosion/spacy-models/releases) 找到最新版本。
+
+2. 使用 **Stanza** 包下载 NLP 模型，在 IDE 中运行以下代码：
+    ```python
+    import stanza
+    stanza.download('en')
+    stanza.download('zh')
+    ```
+   该命令会下载 **英文** 和 **中文** 的 Stanza 模型，它们是执行多种 NLP 任务所必需的。
+
+3. 如果你打算在 **服务器端** 使用这些模型，请确保模型在服务器环境中被正确加载。  
+   如果无法自动加载，则必须将模型放置在项目的根目录中。
+
 **隐私声明**
 ---
 本应用程序旨在处理您提供的数据以生成定制化的建议和结果。您的隐私至关重要。
