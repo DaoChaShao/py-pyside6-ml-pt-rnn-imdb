@@ -16,19 +16,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 @dataclass
 class FilePaths:
     MODEL: Path = BASE_DIR / "models/model.pth"
-    BOSTON_HOUSE_PRICES = BASE_DIR / "data/boston_house_prices.txt"
     SPACY_EN_MODEL = BASE_DIR / "models/spacy/en_core_web_md"
     SPACY_ZH_MODEL = BASE_DIR / "models/spacy/zh_core_web_md"
     STANZA_MODEL = BASE_DIR / "models/stanza"
     DATASET_TRAIN = BASE_DIR / "data/train/"
     DATASET_TEST = BASE_DIR / "data/test/"
+    DICTIONARY = BASE_DIR / "data/dictionary.json"
 
 
 @dataclass
 class DataPreprocessor:
     PCA_VARIANCE_THRESHOLD: float = 0.95
     RANDOM_STATE: int = 27
-    VALID_SIZE: float = 0.2
+    VALID_SIZE: float = 0.7
     IS_SHUFFLE: bool = True
     BATCH_SIZE: int = 32
 
@@ -37,7 +37,7 @@ class DataPreprocessor:
 class ModelParameters:
     FC_HIDDEN_UNITS: int = 128
     FC_DROPOUT_RATE: float = 0.2
-    RNN_SEQUENTIAL_LENGTH: int = 12
+    RNN_SEQ_MAX_LEN: int = 12
     RNN_EMBEDDING_DIM: int = 256
     RNN_HIDDEN_SIZE: int = 512
     RNN_LAYERS: int = 2
