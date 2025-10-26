@@ -5,10 +5,9 @@
 
 **INTRODUCTION**
 ---
-This project focuses on sentiment analysis of movie reviews using the **IMDB dataset**, combining **PyTorch**,
-**TensorFlow**, and **PySide6** to build a complete deep learning workflow with a visualization interface.
-
-The main goal is to help learners understand text processing, model training & evaluation, and GUI presentation.
+This project focuses on sentiment analysis of movie reviews using the **IMDB dataset**, combining **PyTorch**, *
+*TensorFlow**, and **PySide6** to build a complete **deep learning** workflow with a visualization interface. The main
+goal is to help learners understand text processing, model training & evaluation, and GUI presentation.
 
 **FEATURES**
 ---
@@ -22,9 +21,6 @@ The main goal is to help learners understand text processing, model training & e
 - **Multi-framework Learning**: Experience both PyTorch and TensorFlow and understand their differences in text
   classification tasks.
 - **Highly Extensible**: Easily swap models, optimizers, or preprocessing methods for experimental comparisons.
-
-The project aims to provide a hands-on example of deep learning workflow integration — from data preparation and model
-training to result visualization and deployment with GUI.
 
 **PRIVACY NOTICE**
 ---
