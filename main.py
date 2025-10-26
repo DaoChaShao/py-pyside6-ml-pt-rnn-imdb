@@ -6,14 +6,25 @@
 # @File     :   main.py
 # @Desc     :   
 
-from utils.nlp import snlp_analysis
+from random import choice
+from spacy import util
+
+from utils.nlp import spacy_tokeniser, stanza_tokeniser
 
 
 def main() -> None:
     """ Main Function """
     text_zh = "这是一个用于测试自然语言处理功能的示例文本."
     text_en = "This is a sample text for testing natural language processing features."
-    snlp_analysis(text_zh, language="zh")
+    words = spacy_tokeniser(text_en, lang="en")
+    print(words)
+    vocabs = spacy_tokeniser(text_zh, lang="zh")
+    print(vocabs)
+
+    stanza_words = stanza_tokeniser(text_zh, lang="zh")
+    print(stanza_words)
+    stanza_vocabs = stanza_tokeniser(text_en, lang="en")
+    print(stanza_vocabs)
 
 
 if __name__ == "__main__":
