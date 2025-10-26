@@ -22,6 +22,30 @@ goal is to help learners understand text processing, model training & evaluation
   classification tasks.
 - **Highly Extensible**: Easily swap models, optimizers, or preprocessing methods for experimental comparisons.
 
+**NLP MODELS USAGE**
+---
+To use the models provided in this project, follow these general steps:
+
+1. Download the NLP models while using the SpaCy package by running the following command in your terminal:
+    ```bash
+    python -m spacy download en_core_web_sm
+    # or using uv
+    uv pip download https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0.tar.gz
+    uv pip download https://github.com/explosion/spacy-models/releases/download/zh_core_web_md-3.8.0/zh_core_web_md-3.8.0.tar.gz
+    ```
+   This command downloads the **md** English model for SpaCy, which is suitable for various NLP tasks. If you plan to
+   update the model, you can find the latest versions on
+   the [SpaCy Models page](https://github.com/explosion/spacy-models/releases).
+2. Download the NLP models while using the Stanza package by running the following code in your IDE:
+    ```python
+    import stanza
+    stanza.download('en')
+    stanza.download('zh')
+    ```
+   This command downloads the English and Chinese models for Stanza, which are essential for various NLP tasks.
+3. If you plan to use the models on the server side, ensure that the models are correctly loaded in your server
+   environment if capable. Otherwise, you must put the models in your root directory.
+
 **PRIVACY NOTICE**
 ---
 
