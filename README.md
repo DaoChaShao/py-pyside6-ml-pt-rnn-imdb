@@ -9,6 +9,17 @@ This project focuses on sentiment analysis of movie reviews using the **IMDB dat
 **TensorFlow**, and **PySide6** to build a complete **deep learning** workflow with a visualization interface. The main
 goal is to help learners understand text processing, model training & evaluation, and GUI presentation.
 
+**DATA DESCRIPTION**
+---
+
++ **Dataset Size**: 50,000 movie reviews
++ **Split**: 25,000 training samples + 25,000 testing samples
++ **Label Distribution**: 50% positive reviews and 50% negative reviews
++ **Data Balance**: Balanced training and testing sets
++ **Data Format**: Plain text files stored in `pos` and `neg` folders based on sentiment
++ **Source**: Stanford AI Lab
++ **Authors**: Andrew L. Maas, Raymond E. Daly, Peter T. Pham, Dan Huang, Andrew Y. Ng, Christopher Potts
+
 **FEATURES**
 ---
 
