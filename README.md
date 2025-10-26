@@ -5,8 +5,8 @@
 
 **INTRODUCTION**
 ---
-This project focuses on sentiment analysis of movie reviews using the **IMDB dataset**, combining **PyTorch**, *
-*TensorFlow**, and **PySide6** to build a complete **deep learning** workflow with a visualization interface. The main
+This project focuses on sentiment analysis of movie reviews using the **IMDB dataset**, combining **PyTorch**,
+**TensorFlow**, and **PySide6** to build a complete **deep learning** workflow with a visualization interface. The main
 goal is to help learners understand text processing, model training & evaluation, and GUI presentation.
 
 **FEATURES**
