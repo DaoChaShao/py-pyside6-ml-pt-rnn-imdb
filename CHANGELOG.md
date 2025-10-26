@@ -38,6 +38,8 @@
 
 ### Docs
 
+- fix formatting in README.md for improved readability ([3ab6a50](https://github.com///commit/3ab6a50363433783e5515468c09ba0306dd12250))
+- update CHANGELOG.md for version 0.1.0 with new features and documentation updates ([e8aff29](https://github.com///commit/e8aff29224f70fb0de239e0189ba9c3ea3214733))
 - add usage instructions for NLP models in README.zh-CN.md ([e945193](https://github.com///commit/e94519336c119a16bd8057e634b9d39bb54d1937))
 - update README.md with instructions for downloading NLP models for SpaCy and Stanza ([e7b73d2](https://github.com///commit/e7b73d2af1f93ecc78fa95c61f11633f4ac99f1b))
 - delete a package ([94cfda2](https://github.com///commit/94cfda215447c877f081147d1123211bf66d088b))
