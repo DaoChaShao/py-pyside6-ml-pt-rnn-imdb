@@ -71,7 +71,7 @@ def load_data(dataset_path: str) -> tuple[DataFrame, DataFrame]:
     """
     dataset: DataFrame = read_csv(dataset_path)
 
-    y: DataFrame = dataset[dataset.columns[0]]
+    y: DataFrame = dataset[:, -1]
     X: DataFrame = dataset.drop(dataset.columns[0], axis=1)
 
     print(f"X's type is {type(X)}, and its shape is {X.shape}.")
@@ -91,7 +91,7 @@ def summary_data(data: DataFrame) -> None:
 
 
 @timer
-def preprocess_data(data: DataFrame, is_tensor: bool = False) -> tuple[Union[DataFrame, Tensor], ColumnTransformer]:
+def standardise_data(data: DataFrame, is_tensor: bool = False) -> tuple[Union[DataFrame, Tensor], ColumnTransformer]:
     """ Preprocess the data by handling missing values, scaling numerical features, and encoding categorical features.
     :param data: the DataFrame containing the selected features for training
     :param is_tensor: whether to return a torch Tensor instead of a DataFrame
@@ -145,7 +145,7 @@ def preprocess_data(data: DataFrame, is_tensor: bool = False) -> tuple[Union[Dat
 
 @timer
 def split_data(
-        features: DataFrame, labels: DataFrame,
+        features: DataFrame | list, labels: DataFrame | list,
         valid_size: float = 0.2, random_state: int = 27, is_shuffle: bool = True
 ) -> tuple:
     """ Split the data into training and testing sets
@@ -164,15 +164,18 @@ def split_data(
         stratify=None
     )
 
-    print(f"X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
-    print(f"X_valid shape: {X_valid.shape}, y_valid shape: {y_valid.shape}")
+    if isinstance(X_train, DataFrame):
+        print(f"X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
+        print(f"X_valid shape: {X_valid.shape}, y_valid shape: {y_valid.shape}")
+    else:
+        print(f"X_train length: {len(X_train)}, y_train length: {len(y_train)}")
+        print(f"X_valid length: {len(X_valid)}, y_valid length: {len(y_valid)}")
 
     return X_train, X_valid, y_train, y_valid
 
 
 @timer
-def select_pca_importance(data: DataFrame, threshold: float = 0.95, top_n: int = None) -> tuple[
-    list[str], PCA, DataFrame]:
+def select_pca_importance(data: DataFrame, threshold: float = 0.95, top_n: int = None) -> tuple[list, PCA, DataFrame]:
     """ Calculate PCA feature importance
     :param data: the DataFrame containing the selected features for training
     :param threshold: the cumulative variance ratio threshold to consider
