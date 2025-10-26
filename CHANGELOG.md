@@ -38,6 +38,7 @@
 
 ### Docs
 
+- update CHANGELOG.md for version 0.1.0 with recent documentation changes ([5fcc87a](https://github.com///commit/5fcc87af3e89498f870ea2748cf1fc1f25f6edd5))
 - fix formatting in README.md for improved readability ([3ab6a50](https://github.com///commit/3ab6a50363433783e5515468c09ba0306dd12250))
 - update CHANGELOG.md for version 0.1.0 with new features and documentation updates ([e8aff29](https://github.com///commit/e8aff29224f70fb0de239e0189ba9c3ea3214733))
 - add usage instructions for NLP models in README.zh-CN.md ([e945193](https://github.com///commit/e94519336c119a16bd8057e634b9d39bb54d1937))
@@ -49,4 +50,8 @@
 
 - remove main function and entry point from predictor.py ([3a58839](https://github.com///commit/3a58839da2001de341b0d06400e0e763df1d2446))
 - remove main function and entry point from models.py ([ad66727](https://github.com///commit/ad667275da8c50f6e873baaed1fea828e169c6ec))
+
+### Dependencies
+
+- add spacy-pkuseg requirement for improved NLP model support ([091848c](https://github.com///commit/091848cf1ee26c499ec2928bc08a02b175306f31))
 
