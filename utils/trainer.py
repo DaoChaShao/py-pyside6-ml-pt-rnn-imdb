@@ -7,33 +7,22 @@
 # @Desc     :   
 
 from PySide6.QtCore import QObject, Signal
-from torch import nn, no_grad, save, device, abs as torch_abs
+from torch import nn, no_grad, save, device, Tensor
 from torch.utils.data import DataLoader
-from tqdm import tqdm
 
 from utils.PT import get_device, TorchDataLoader
 
 
-class RegressionTrainer(QObject):
+class RNNClassificationTorchTrainer(QObject):
     """ Trainer class for managing training process """
-    processor: Signal = Signal(int, float, float)
+    losses: Signal = Signal(int, float, float, float)
 
-    def __init__(self, model: nn.Module, optimiser, criterion, accelerator: str = "auto"):
+    def __init__(self, model: nn.Module, optimiser, criterion, accelerator: str = "auto") -> None:
         super().__init__()
-        """ Initialise the Trainer class
-        :param model: the neural network model to be trained
-        :param optimiser: the optimiser for updating model parameters
-        :param criterion: the loss function
-        :param accelerator: device to use for training ("cpu", "cuda", or "auto)
-        """
         self._model = model
         self._optimiser = optimiser
         self._criterion = criterion
         self._accelerator = get_device(accelerator)
-
-        # self._train_losses: list[float] = []
-        # self._valid_losses: list[float] = []
-        # self._accuracies: list[float] = []
 
     def _epoch_train(self, dataloader: DataLoader | TorchDataLoader) -> float:
         """ Train the model for one epoch
@@ -45,24 +34,23 @@ class RegressionTrainer(QObject):
 
         _loss: float = 0.0
         _total: float = 0.0
-        for i, (features, labels) in enumerate(dataloader):
+        for features, labels in dataloader:
             features, labels = features.to(device(self._accelerator)), labels.to(device(self._accelerator))
 
             self._optimiser.zero_grad()
             outputs = self._model(features)
             # print(outputs.shape, labels.shape)
+
             loss = self._criterion(outputs, labels)
             loss.backward()
             self._optimiser.step()
 
             _loss += loss.item() * features.size(0)
-            _total += features.size(0)
-
-            # print(f"Batches [{i + 1}/{len(dataloader)}] - Train Loss: {_loss / _total:.4f}")
+            _total += labels.numel()
 
         return _loss / _total
 
-    def _epoch_valid(self, dataloader: DataLoader | TorchDataLoader):
+    def _epoch_valid(self, dataloader: DataLoader | TorchDataLoader) -> tuple[float, float]:
         """ Validate the model for one epoch
         :param dataloader: DataLoader for validation data
         :return: average validation loss for the epoch
@@ -71,27 +59,28 @@ class RegressionTrainer(QObject):
         self._model.eval()
 
         _loss: float = 0.0
+        _correct: float = 0.0
         _total: float = 0.0
-        _mae: float = 0.0
         with no_grad():
-            for i, (features, labels) in enumerate(dataloader):
+            for features, labels in dataloader:
                 features, labels = features.to(device(self._accelerator)), labels.to(device(self._accelerator))
 
                 outputs = self._model(features)
                 # print(outputs.shape, labels.shape)
+
                 loss = self._criterion(outputs, labels)
+
                 _loss += loss.item() * features.size(0)
-
-                # Calculate MAE
-                _mae += torch_abs(outputs - labels).sum().item()
-
+                _correct += self._get_accuracy(outputs, labels)
                 _total += labels.numel()
 
-                # print(
-                #     f"Batches [{i + 1}/{len(dataloader)}] - Valid Loss: {_loss / _total:.4f}"
-                # )
+        return _loss / _total, _correct / _total
 
-        return _loss / _total, _mae / _total
+    @staticmethod
+    def _get_accuracy(outputs: Tensor, labels: Tensor) -> float:
+        """ Get accuracy of the model """
+        predictions = outputs.argmax(dim=1)
+        return predictions.eq(labels).sum().item()
 
     def fit(self,
             train_loader: DataLoader | TorchDataLoader, valid_loader: DataLoader | TorchDataLoader,
@@ -106,21 +95,17 @@ class RegressionTrainer(QObject):
         """
         _best_valid_loss = float("inf")
 
-        for epoch in tqdm(range(epochs), desc="Training Progress", unit="epoches"):
+        for epoch in range(epochs):
             train_loss = self._epoch_train(train_loader)
-            valid_loss, mae = self._epoch_valid(valid_loader)
+            valid_loss, accuracy = self._epoch_valid(valid_loader)
 
-            # Emit signal for each epoch
-            self.processor.emit(epoch + 1, train_loss, valid_loss)
+            # Emit training and validation progress signal
+            self.losses.emit(epoch + 1, train_loss, valid_loss, accuracy)
 
-            # self._train_losses.append(train_loss)
-            # self._valid_losses.append(valid_loss)
-            # self._accuracies.append(accuracy)
-
-            print(f"Epoch [{epoch + 1}/{epochs}] | "
-                  f"Train Loss: {train_loss:.4f} | "
-                  f"Valid Loss: {valid_loss:.4f} | "
-                  f"Valid MAE: {mae:.4f}")
+            print(f"Epoch [{epoch + 1}/{epochs}] - "
+                  f"Train Loss: {train_loss:.4f} - "
+                  f"Valid Loss: {valid_loss:.4f} - "
+                  f"Accuracy: {accuracy:.2%}")
 
             # Save the model if it has the best validation loss so far
             if valid_loss < _best_valid_loss:
