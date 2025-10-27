@@ -441,7 +441,7 @@ class SeqClassificationTorchDataset(Dataset):
         _features = []
         for seq in self._sequences:
             if len(seq) < self._length:
-                padded_seq = [self._pad] * (self._length - len(seq)) + seq
+                padded_seq = seq + [self._pad] * (self._length - len(seq))
             else:
                 padded_seq = seq[:self._length]
             _features.append(padded_seq)
