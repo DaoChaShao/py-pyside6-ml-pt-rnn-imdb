@@ -36,18 +36,18 @@ class DataPreprocessor:
 @dataclass
 class ModelParameters:
     FC_HIDDEN_UNITS: int = 128
-    FC_DROPOUT_RATE: float = 0.2
+    DROPOUT_RATE: float = 0.3
     RNN_SEQ_MAX_LEN: int = 12
     RNN_EMBEDDING_DIM: int = 256
     RNN_HIDDEN_SIZE: int = 512
-    RNN_LAYERS: int = 2
+    RNN_LAYERS: int = 3
     RNN_TEMPERATURE: float = 1.0
 
 
 @dataclass
 class Hyperparameters:
     ALPHA: float = 1e-3
-    EPOCHS: int = 100
+    EPOCHS: int = 20
     ACCELERATOR: str = "cuda" if cuda.is_available() else "cpu"
 
 
