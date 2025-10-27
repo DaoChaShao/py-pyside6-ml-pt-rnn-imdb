@@ -5,6 +5,11 @@
 
 ### Features
 
+- refactor trainer class for RNN classification with accuracy tracking ([475c730](https://github.com///commit/475c7307b7a58689cc0cffc6cb0698ad18d2a575))
+- implement RNNClassificationTorchModel for multi-class classification tasks ([6a60a8d](https://github.com///commit/6a60a8d57d33ba64acc757c78625fbb48b1ccd84))
+- implement RNN model training with updated dataset preparation and trainer setup ([8b9eb1d](https://github.com///commit/8b9eb1dd6b0297ad5a506968f40e42f763a63b29))
+- update the dictionary.json ([154404e](https://github.com///commit/154404ea0609462c396319d7aa5f85d232f3716c))
+- update model parameters for improved performance and flexibility ([c392b86](https://github.com///commit/c392b86c36cfa98b435ed2fbdd4509d28966d5b0))
 - add default value for pad_token in SeqClassificationTorchDataset constructor ([f97cb47](https://github.com///commit/f97cb47226cbc4c186583c98fa8d768f47a80870))
 - rename dataset class for sequence classification and update preprocessing to return max length ([bcecb96](https://github.com///commit/bcecb968a174dfc8995902aa8cf30ded937e90dd))
 - rename and enhance dataset classes for sequential prediction and classification ([3bd37cc](https://github.com///commit/3bd37cc8576fabd870239c4ba0ae4b482e656c35))
@@ -40,11 +45,13 @@
 
 ### Bug Fixes
 
+- correct padding logic in sequence preparation ([08c7c7b](https://github.com///commit/08c7c7b136efa9ee1a1cc19d38d31c9b32f6e645))
 - ensure main function is called and add newline at end of file ([097dcd8](https://github.com///commit/097dcd80ba540830cde95dd2cbaf318766fb893f))
 - add missing newline at end of file and ensure main function is called ([bea5df5](https://github.com///commit/bea5df5c434698f62a1d749a4c202968dc4f3394))
 
 ### Docs
 
+- update CHANGELOG.md for version 0.1.0 with recent changes and enhancements ([85b0d25](https://github.com///commit/85b0d25eb62a92e5ff4069b0af4b0ad4597c0787))
 - add data description and details to Chinese README ([40132d7](https://github.com///commit/40132d7424b7c9b44a518998df349773f30a32e0))
 - add dataset description and details to README ([6460915](https://github.com///commit/64609153010ed775f4b772827b499e2b9db5f9e4))
 - update CHANGELOG.md for version 0.1.0 with recent dependency additions ([8209c34](https://github.com///commit/8209c3491b93b05f00c7db563af6386005d3c0cb))
