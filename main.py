@@ -7,6 +7,7 @@
 # @Desc     :   
 
 from numpy import random as np_random
+from random import randint
 from torch import optim, nn
 from tqdm import tqdm
 
@@ -14,7 +15,7 @@ from utils.config import CONFIG
 from utils.helper import load_text_data_in_dir, save_json
 from utils.models import RNNClassificationTorchModel
 from utils.nlp import spacy_tokeniser, regular_english, count_frequency
-from utils.PT import SeqClassificationTorchDataset, TorchDataLoader
+from utils.PT import SeqClassificationTorchDataset, TorchDataLoader, TorchRandomSeed
 from utils.stats import split_data
 from utils.trainer import RNNClassificationTorchTrainer
 
@@ -71,27 +72,27 @@ def preprocess_data():
     # Load dataset
     train = load_text_data_in_dir(CONFIG.FILEPATHS.DATASET_TRAIN)
     test = load_text_data_in_dir(CONFIG.FILEPATHS.DATASET_TEST)
-    # index = randint(0, len(train["ids"]) - 1)
+    index = randint(0, len(train["ids"]) - 1)
     # print(f"Train | ID: {train["ids"][index]}, Rate: {train["ratings"][index]}, Label: {train["labels"][index]}")
     # print(f"Test  | ID: {test["ids"][index]}, Rate: {test["ratings"][index]}, Label: {test["labels"][index]}")
     # print(f"Train | Labels: {train["labels"][12495:12505]}")
     # print(f"Test  | Labels: {test["labels"][12495:12505]}")
 
     # Tokenize texts
-    amount: int | None = 100
-    # content_train: list[list[str]] = tokenize_texts(train["contents"][: amount])
-    # label_train: list[list[int]] = train["labels"][: amount]
-    # print(len(content_train), content_train)
-    # print(len(content_train))
-    # content_test: list[list[str]] = tokenize_texts(test["contents"][: amount])
-    # label_test: list[list[int]] = test["labels"][: amount]
-    train_indices = np_random.choice(len(train["contents"]), amount, replace=False)
-    test_indices = np_random.choice(len(test["contents"]), amount, replace=False)
+    amount: int | None = None
+    if amount is None:
+        content_train = tokenize_texts(train["contents"])
+        label_train = train["labels"]
+        content_test = tokenize_texts(test["contents"])
+        label_test = test["labels"]
+    else:
+        train_indices = np_random.choice(len(train["contents"]), amount, replace=False)
+        test_indices = np_random.choice(len(test["contents"]), amount, replace=False)
 
-    content_train = tokenize_texts([train["contents"][i] for i in train_indices])
-    label_train = [train["labels"][i] for i in train_indices]
-    content_test = tokenize_texts([test["contents"][i] for i in test_indices])
-    label_test = [test["labels"][i] for i in test_indices]
+        content_train = tokenize_texts([train["contents"][i] for i in train_indices])
+        label_train = [train["labels"][i] for i in train_indices]
+        content_test = tokenize_texts([test["contents"][i] for i in test_indices])
+        label_test = [test["labels"][i] for i in test_indices]
 
     # Spilt validation set from test set
     content_valid, content_test, label_valid, label_test = split_data(
@@ -103,13 +104,14 @@ def preprocess_data():
 
     # Count frequency
     contents = content_train + content_valid
-    unique_words = [word for content in contents for word in content]
-    freq_words, _ = count_frequency(unique_words, top_k=10)
+    content_words = [word for content in contents for word in content]
+    freq_words, _ = count_frequency(content_words)
     # print(freq_words)
 
     # Create a dictionary/word2id mapping words to indices
     special: list[str] = ["<PAD>", "<UNK>"]
     dictionary: dict[str, int] = {word: idx for idx, word in enumerate(special + freq_words)}
+    # print(dictionary)
     print(len(dictionary))
     save_json(dictionary, CONFIG.FILEPATHS.DICTIONARY)
 
@@ -144,6 +146,10 @@ def preprocess_data():
 def prepare_dataset():
     """ Dataset Preparation Function """
     X_train, y_train, X_valid, y_valid, _, _, sequences, dictionary, max_len = preprocess_data()
+    print(len(X_train))
+    print(len(y_train))
+    print(len(X_valid))
+    print(len(y_valid))
 
     # Create PyTorch Datasets
     train_dataset = SeqClassificationTorchDataset(X_train, y_train, max_len)
@@ -169,37 +175,42 @@ def prepare_dataset():
 
 def main() -> None:
     """ Main Function """
-    train_loader, valid_loader, sequences, dictionary, max_len = prepare_dataset()
+    with TorchRandomSeed("IMDB RNN Classification"):
+        train_loader, valid_loader, sequences, dictionary, max_len = prepare_dataset()
+        # index: int = randint(0, len(train_loader) - 1)
+        # print(f"Sample batch index: {index}")
+        # print(train_loader[index][0])
+        # print(train_loader[index][1])
 
-    # Setup model
-    model = RNNClassificationTorchModel(
-        vocab_size=len(dictionary),
-        embedding_dim=CONFIG.PARAMETERS.RNN_EMBEDDING_DIM,
-        hidden_size=CONFIG.PARAMETERS.RNN_HIDDEN_SIZE,
-        num_layers=CONFIG.PARAMETERS.RNN_LAYERS,
-        num_classes=2,  # Binary classification
-        dropout_rate=CONFIG.PARAMETERS.DROPOUT_RATE
-    )
+        # Setup model
+        model = RNNClassificationTorchModel(
+            vocab_size=len(dictionary),
+            embedding_dim=CONFIG.PARAMETERS.RNN_EMBEDDING_DIM,
+            hidden_size=CONFIG.PARAMETERS.RNN_HIDDEN_SIZE,
+            num_layers=CONFIG.PARAMETERS.RNN_LAYERS,
+            num_classes=2,  # Binary classification
+            dropout_rate=CONFIG.PARAMETERS.DROPOUT_RATE
+        )
 
-    # Setup optimizer and loss function
-    optimizer = optim.Adam(model.parameters(), lr=CONFIG.HYPERPARAMETERS.ALPHA)
-    criterion = nn.CrossEntropyLoss()
-    model.summary()
+        # Setup optimizer and loss function
+        optimizer = optim.AdamW(model.parameters(), lr=CONFIG.HYPERPARAMETERS.ALPHA, weight_decay=1e-4)
+        criterion = nn.CrossEntropyLoss()
+        model.summary()
 
-    # Setup trainer
-    trainer = RNNClassificationTorchTrainer(
-        model=model,
-        optimiser=optimizer,
-        criterion=criterion,
-        accelerator=CONFIG.HYPERPARAMETERS.ACCELERATOR
-    )
-    # Train the model
-    trainer.fit(
-        train_loader=train_loader,
-        valid_loader=valid_loader,
-        epochs=CONFIG.HYPERPARAMETERS.EPOCHS,
-        model_save_path=str(CONFIG.FILEPATHS.MODEL)
-    )
+        # Setup trainer
+        trainer = RNNClassificationTorchTrainer(
+            model=model,
+            optimiser=optimizer,
+            criterion=criterion,
+            accelerator=CONFIG.HYPERPARAMETERS.ACCELERATOR
+        )
+        # Train the model
+        trainer.fit(
+            train_loader=train_loader,
+            valid_loader=valid_loader,
+            epochs=CONFIG.HYPERPARAMETERS.EPOCHS,
+            model_save_path=str(CONFIG.FILEPATHS.MODEL)
+        )
 
 
 if __name__ == "__main__":
