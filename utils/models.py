@@ -6,7 +6,7 @@
 # @File     :   models.py
 # @Desc     :   
 
-from torch import nn, relu
+from torch import nn, relu, cat
 from torchsummary import summary
 
 
@@ -34,8 +34,8 @@ class RNNClassificationTorchModel(nn.Module):
 
         self._embed = nn.Embedding(self._L, self._N)
         self._lstm = nn.LSTM(self._N, self._M, self._C, batch_first=True, dropout=dropout_rate, bidirectional=True)
-        self.dropout = nn.Dropout(dropout_rate)
-        self._fc = nn.Linear(self._M * 2, num_classes)
+        self._dropout = nn.Dropout(dropout_rate)
+        self._classifier = nn.Linear(self._M * 2, num_classes)
 
         self._init_params()
 
@@ -47,18 +47,21 @@ class RNNClassificationTorchModel(nn.Module):
             elif "bias" in name:
                 nn.init.zeros_(param)
 
-    def forward(self, X, hx=None):
+    def forward(self, X):
         """ Forward pass of the model
         :param X: input tensor, shape (batch_size, sequence_length)
-        :param hx: hidden state tensor, shape (num_layers, batch_size, hidden_dim)
         :return: output tensor and new hidden state tensor, shapes (batch_size, sequence_length, vocab_size) and (num_layers, batch_size, hidden_dim)
         """
         out = self._embed(X)
-        out, hn = self._lstm(out, hx) if hx is not None else self._lstm(out)
-        # Take the output of the last time step, shape (batch_size, hidden_dim)
-        out = out[:, -1, :]
+        _, (hn, _) = self._lstm(out)
+
+        forward_hn = hn[-2]  # [batch_size, hidden_size]
+        backward_hn = hn[-1]  # [batch_size, hidden_size]
+        out = cat([forward_hn, backward_hn], dim=1)  # [batch_size, hidden_size*2]
+
+        out = self._dropout(out)
         # Fully connected layer, shape (batch_size, num_classes)
-        out = self._fc(out)
+        out = self._classifier(out)
 
         return out
 
@@ -73,7 +76,7 @@ class RNNClassificationTorchModel(nn.Module):
         print(f"- Embedding dim: {self._N}")
         print(f"- Hidden size: {self._M}")
         print(f"- Num layers: {self._C}")
-        print(f"- Output classes: {self._fc.out_features}")
+        print(f"- Output classes: {self._classifier.out_features}")
         print(f"- Total parameters: {total_params:,}")
         print(f"- Trainable parameters: {trainable_params:,}")
         print("=" * 64)
