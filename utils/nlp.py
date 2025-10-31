@@ -48,15 +48,17 @@ def regular_english(words: list[str]) -> list[str]:
 
 
 @timer
-def count_frequency(words: list[str], top_k: int = 10) -> tuple[list, DataFrame]:
+def count_frequency(words: list[str], top_k: int = 10, freq_threshold: int = 3) -> tuple[list, DataFrame]:
     """ Get frequency of Chinese words
     :param words: list of words to process
     :param top_k: number of top frequent words to return
+    :param freq_threshold: frequency threshold to separate high and low frequency words
     :return: DataFrame containing words and their frequencies
     """
     # Get word frequency using Counter
     counter = Counter(words)
-    words: list[str] = [word for word, count in counter.most_common()]
+    words_high_freq: list[str] = [word for word, count in counter.most_common() if count > freq_threshold]
+    words_low_freq: list[str] = [word for word, count in counter.most_common() if count <= freq_threshold]
 
     cols: list[str] = ["word", "frequency"]
     sorted_freq = counter.most_common(top_k)
@@ -64,8 +66,9 @@ def count_frequency(words: list[str], top_k: int = 10) -> tuple[list, DataFrame]
     sorted_df = df.sort_values(by="frequency", ascending=False)
 
     print(f"Word Frequency Results:\n{sorted_df}")
+    print(f"{len(words_low_freq)} low frequency words has been filtered out (frequency <= {freq_threshold}).")
 
-    return words, sorted_df
+    return words_high_freq, sorted_df
 
 
 @timer
