@@ -9,7 +9,7 @@
 from numpy import ndarray, random as np_random
 from pandas import DataFrame, Series
 from random import seed as rnd_seed, getstate, setstate
-from torch import (cuda, backends, Tensor, tensor, float32, int64,
+from torch import (cuda, backends, Tensor, tensor, float32, int64, long,
                    manual_seed, get_rng_state, set_rng_state)
 
 from torch.utils.data import Dataset, DataLoader
@@ -432,7 +432,7 @@ class SeqClassificationTorchDataset(Dataset):
         self._length = seq_max_len
         self._pad = pad_token
         self._features = self._pad_to_fixed_len_tensor()
-        self._labels = tensor(lbl_seqs)
+        self._labels = tensor(lbl_seqs, dtype=long)
 
     def _pad_to_fixed_len_tensor(self) -> Tensor:
         """ Convert input data to a PyTorch tensor via padding to fixed length
