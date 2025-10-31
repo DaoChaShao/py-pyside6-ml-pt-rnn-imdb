@@ -94,6 +94,9 @@ class RNNClassificationTorchTrainer(QObject):
         :return: None
         """
         _best_valid_loss = float("inf")
+        _patience = 4
+        _patience_counter = 0
+        _min_delta = 5e-4
 
         for epoch in range(epochs):
             train_loss = self._epoch_train(train_loader)
@@ -108,10 +111,20 @@ class RNNClassificationTorchTrainer(QObject):
                   f"Accuracy: {accuracy:.2%}")
 
             # Save the model if it has the best validation loss so far
-            if valid_loss < _best_valid_loss:
+            if valid_loss < _best_valid_loss - _min_delta:
+                _patience_counter = 0
                 _best_valid_loss = valid_loss
                 save(self._model.state_dict(), model_save_path)
                 print(f"Model's parameters saved to {model_save_path}")
+            else:
+                _patience_counter += 1
+                print(f"Validation loss [{_patience_counter}/{_patience}]did not improve.")
+                if _patience_counter >= _patience:
+                    print(f"Early stopping triggered at the {epoch} epoch and the loss is {_best_valid_loss:4f}.")
+                    break
+
+        if _patience_counter < _patience:
+            print(f"Training completed after {epochs} epochs.")
 
 
 if __name__ == "__main__":
